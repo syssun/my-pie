@@ -20,6 +20,7 @@
     <modules>
         <module>client</module>
         <module>server</module>
+        <module>client-pc</module>
     </modules>
     <dependencies>
         <dependency>

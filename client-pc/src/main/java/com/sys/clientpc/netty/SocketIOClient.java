@@ -25,13 +25,25 @@ public class SocketIOClient {
     @Value("${netty.server.url}")
     private String url;
 
-    public static Socket socket;
+    private  Socket socket;
     private static String userID = "PC-"+(new Date().getTime());
 
+    public Socket getSocket(){
+        if(socket==null || !socket.connected()){
+            log.info("尝试连接一次");
+            clientConnect();
+        }
+        return socket;
+    }
+
+
     @PostConstruct
-    public void clientConnect() {
+    public synchronized void clientConnect() {
         // 服务端socket.io连接通信地址
         try {
+            if(socket !=null && socket.connected()){
+                return;
+            }
             IO.Options options = new IO.Options();
             options.transports = new String[]{"websocket"};
             options.reconnectionAttempts = 2;
@@ -41,12 +53,49 @@ public class SocketIOClient {
             options.timeout = 1000;
             // userId: 唯一标识 传给服务端存储
             socket = IO.socket(url + "?userID=" + userID, options);
-            socket.on(Socket.EVENT_CONNECT, args1 -> socket.send("hello..."));
-            socket.on("pc-close", new CloseScreenListener());
-            socket.connect();
+            synchronized (socket){
+                socket.on(Socket.EVENT_CONNECT, args1 -> socket.send("hello..."));
+                socket.on("pc-close", new CloseScreenListener());
+                socket.connect();
+            }
+            Thread.sleep(1000);
+            if(!socket.connected()){
+                socket =null ;
+                log.info("客户端未连接成功");
+            }else{
+                log.info("客户端连接成功");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            socket=null;
+            log.error("客户端连接失败",e);
         }
+    }
+
+    Object object = new Object();
+    //客户端重连
+    @PostConstruct
+    public void reConnect(){
+        new Thread(() -> {
+            try {
+                while(true){
+                    synchronized (object) {
+                        if (socket == null || !socket.connected()) {
+                            log.info("正在重新连接");
+                            clientConnect();
+                        } else {
+                            log.info("已连接");
+                            Thread.sleep(10000);
+                        }
+                        Thread.sleep(3000);
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }).start();
+
     }
 
 

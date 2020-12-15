@@ -22,7 +22,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="client" options="-parameters" />
       <module name="client-pc" options="-parameters" />
-      <module name="my-pie" options="-parameters" />
+      <module name="my-pie" options="" />
       <module name="server" options="-parameters" />
     </option>
   </component>

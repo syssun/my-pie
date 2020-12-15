@@ -28,7 +28,7 @@ public class SocketIOClient {
     @Value("${netty.server.url}")
     private String url;
 
-    public static Socket socket;
+    public volatile Socket socket;
     private static String userID = "PIE-"+(new Date().getTime());
 
     @PostConstruct
@@ -53,9 +53,38 @@ public class SocketIOClient {
             socket.on("broadcast", new BroadcastListener());
             socket.on("webcam", new WebCamListener());
             socket.connect();
+            Thread.sleep(1000);
+            if(!socket.connected()){
+                socket =null ;
+                log.info("客户端未连接成功");
+            }else{
+                log.info("客户端连接成功");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    //客户端重连
+    @PostConstruct
+    public void reConnect(){
+        new Thread(() -> {
+            try {
+                while(true){
+                    if(socket==null || !socket.connected()){
+                        log.info("正在重新连接");
+                        clientConnect();
+                    }else{
+                        log.info("已连接");
+                        Thread.sleep(10000);
+                    }
+                    Thread.sleep(3000);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }).start();
+
     }
 
 
