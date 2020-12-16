@@ -1,11 +1,13 @@
 package com.sys.clientpc.netty;
 
+import com.sys.clientpc.netty.listeners.BroadcastListener;
 import com.sys.clientpc.netty.listeners.CloseScreenListener;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,7 +22,6 @@ import java.util.Date;
  **/
 @Slf4j
 @Component
-@Order(99999)
 public class SocketIOClient {
     @Value("${netty.server.url}")
     private String url;
@@ -33,15 +34,15 @@ public class SocketIOClient {
             log.info("尝试连接一次");
             clientConnect();
         }
+
         return socket;
     }
-
-
-    @PostConstruct
-    public synchronized void clientConnect() {
+    @Scheduled(cron = "0/5 * * * * *")
+    public void clientConnect() {
         // 服务端socket.io连接通信地址
         try {
             if(socket !=null && socket.connected()){
+                log.info("已连接......");
                 return;
             }
             IO.Options options = new IO.Options();
@@ -53,11 +54,13 @@ public class SocketIOClient {
             options.timeout = 1000;
             // userId: 唯一标识 传给服务端存储
             socket = IO.socket(url + "?userID=" + userID, options);
-            synchronized (socket){
-                socket.on(Socket.EVENT_CONNECT, args1 -> socket.send("hello..."));
-                socket.on("pc-close", new CloseScreenListener());
-                socket.connect();
+            if(socket==null){
+                return;
             }
+            socket.on(Socket.EVENT_CONNECT, args1 -> socket.emit("login",userID));
+            socket.connect();
+            socket.on("pc-close",new CloseScreenListener());
+            socket.on("broad-message",new BroadcastListener());
             Thread.sleep(1000);
             if(!socket.connected()){
                 socket =null ;
@@ -71,32 +74,5 @@ public class SocketIOClient {
             log.error("客户端连接失败",e);
         }
     }
-
-    Object object = new Object();
-    //客户端重连
-    @PostConstruct
-    public void reConnect(){
-        new Thread(() -> {
-            try {
-                while(true){
-                    synchronized (object) {
-                        if (socket == null || !socket.connected()) {
-                            log.info("正在重新连接");
-                            clientConnect();
-                        } else {
-                            log.info("已连接");
-                            Thread.sleep(10000);
-                        }
-                        Thread.sleep(3000);
-                    }
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }).start();
-
-    }
-
 
 }

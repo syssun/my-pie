@@ -20,6 +20,6 @@ public class WebCamListener implements Emitter.Listener {
        String s =  MyWebcam.getImageBase64();
        log.info("base64:{}<<<",s);
        //将图片在发送给服务端
-        SocketIOClient.socket.emit("webcam",s);
+        //SocketIOClient..emit("webcam",s);
     }
 }
