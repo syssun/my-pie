@@ -7,6 +7,7 @@ import org.json.JSONString;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,17 +21,16 @@ import java.util.Map;
 public class Timers {
 
     //五秒发送在线用户信息
-    @Scheduled(cron = "0/10 * * * * *")
+    @Scheduled(cron = "0/5 * * * * *")
     public void getUser(){
-        Map<String,SocketIOClient> m = PoolsClient.getUsers();
+        List<String> m = PoolsClient.getUsersKey();
         JSONObject j = new JSONObject();
         try {
             j.put("all-users",m);
         }catch (Exception e){}
-        for(Map.Entry<String,SocketIOClient> e:m.entrySet()){
+        for(Map.Entry<String,SocketIOClient> e:PoolsClient.getUsers().entrySet()){
             e.getValue().sendEvent("online-users", j.toString());
         }
     }
-
 
 }

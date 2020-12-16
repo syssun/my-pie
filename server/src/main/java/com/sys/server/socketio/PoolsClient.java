@@ -4,6 +4,8 @@ import com.corundumstudio.socketio.SocketIOClient;
 import io.socket.client.Socket;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,5 +58,12 @@ public class PoolsClient {
     }
     public static Map<String, SocketIOClient> getUsers(){
         return POOLS;
+    }
+    public static List<String> getUsersKey(){
+        List<String> res = new ArrayList<>();
+        for(Map.Entry<String,SocketIOClient> e:POOLS.entrySet()){
+            res.add(e.getKey());
+        }
+        return res;
     }
 }

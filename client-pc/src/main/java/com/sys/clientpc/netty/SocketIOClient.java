@@ -26,13 +26,24 @@ public class SocketIOClient {
     @Value("${netty.server.url}")
     private String url;
 
-    private  Socket socket;
+    static SocketIOClient socketIOClient;
+
+    private  static Socket socket;
     private static String userID = "PC-"+(new Date().getTime());
 
+    public static synchronized SocketIOClient getInstance(){
+        if(socketIOClient==null){
+            socketIOClient = new SocketIOClient();
+        }
+        return socketIOClient;
+    }
+
+
     public Socket getSocket(){
+        getInstance();
         if(socket==null || !socket.connected()){
             log.info("尝试连接一次");
-            clientConnect();
+            socketIOClient.clientConnect();
         }
 
         return socket;

@@ -29,13 +29,25 @@ public class PCEventHandler {
         log.info("服务端接收到指令：pc-close：{}-",data.toString());
         //除了自己不发
         Map<String,SocketIOClient> m = PoolsClient.getUsers();
-        log.info("服务端接收到指令：m：{}-",m.toString());
         for(Map.Entry<String,SocketIOClient> e:m.entrySet()){
             if(e.getValue().getSessionId().toString().equals(client.getSessionId().toString())){
                 continue;
             }
-            log.info("服务端发送指令：pc-close ：{}-",e.getKey());
-            e.getValue().sendEvent("pc-close","1");
+            e.getValue().sendEvent("pc-close",data.toString());
         }
     }
+
+    @OnEvent(value = "pc-close-res") //value是监听事件的名称
+    public void closeRes(SocketIOClient client, AckRequest request, Object data) {
+        log.info("服务端接收到指令：pc-close-res：{}-",data.toString());
+        //除了自己不发
+        Map<String,SocketIOClient> m = PoolsClient.getUsers();
+        for(Map.Entry<String,SocketIOClient> e:m.entrySet()){
+            if(e.getValue().getSessionId().toString().equals(client.getSessionId().toString())){
+                continue;
+            }
+            e.getValue().sendEvent("pc-close-res",data.toString());
+        }
+    }
+
 }
