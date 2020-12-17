@@ -29,7 +29,7 @@ public class SocketIOClient {
     static SocketIOClient socketIOClient;
 
     private  static Socket socket;
-    private static String userID = "PC-"+(new Date().getTime());
+    private static String userID = "PC-HUAWEI-001";
 
     public static synchronized SocketIOClient getInstance(){
         if(socketIOClient==null){
@@ -48,7 +48,7 @@ public class SocketIOClient {
 
         return socket;
     }
-    @Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "0/20 * * * * *")
     public void clientConnect() {
         // 服务端socket.io连接通信地址
         try {

@@ -6,9 +6,7 @@ import com.sys.clientpc.utils.SpringContextHolder;
 import com.sys.clientpc.webcam.MyWebcam;
 import io.socket.emitter.Emitter;
 import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
-
 /**
  * @ClassName CloseScreenListener
  * @Author sys

@@ -29,7 +29,7 @@ public class SocketIOClient {
     private String url;
 
     public volatile Socket socket;
-    private static String userID = "PIE-"+(new Date().getTime());
+    private static String userID = "PIE-001";
 
     @PostConstruct
     public void clientConnect() {
