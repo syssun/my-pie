@@ -28,6 +28,7 @@ public class Timers {
         try {
             j.put("all-users",m);
         }catch (Exception e){}
+        System.out.println(PoolsClient.getUsers().toString());
         for(Map.Entry<String,SocketIOClient> e:PoolsClient.getUsers().entrySet()){
             e.getValue().sendEvent("online-users", j.toString());
         }

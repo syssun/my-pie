@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Version
  **/
 @Slf4j
-public class ConnectedListener implements Emitter.Listener  {
+public class   ConnectedListener implements Emitter.Listener  {
     @Override
     public void call(Object... objects) {
         log.info("客户端连接。。。。。{}",objects.toString());

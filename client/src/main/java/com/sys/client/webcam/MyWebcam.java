@@ -17,6 +17,8 @@ import java.nio.ByteBuffer;
  **/
 @Slf4j
 public class MyWebcam {
+    static Webcam webcam = Webcam.getDefault();
+
     /**
      * websocket 客户端
      * 图片路径
@@ -39,24 +41,23 @@ public class MyWebcam {
      * @param
      */
     public static String getImageBase64(){
-        Webcam webcam = Webcam.getDefault();
         try {
-            webcam.open();
-            BASE64Encoder encoder = new BASE64Encoder();
-            byte[] b = WebcamUtils.getImageBytes(webcam,ImageUtils.FORMAT_JPG);
-            String png_base64 =  encoder.encodeBuffer(b).trim();//转换成base64串
-            png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
-            return png_base64;
+            if(webcam !=null) {
+                webcam.open();
+                BASE64Encoder encoder = new BASE64Encoder();
+                byte[] b = WebcamUtils.getImageBytes(webcam, ImageUtils.FORMAT_JPG);
+                String png_base64 = encoder.encodeBuffer(b).trim();//转换成base64串
+                png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
+                return png_base64;
+            }
         }catch (Exception e){
             if(webcam.isOpen()){
                 webcam.close();
             }
+            e.printStackTrace();
         }
         return null;
     }
-
-
-
 
     public ByteBuffer getImageBytes(Webcam webcam){
         return  webcam.getImageBytes();

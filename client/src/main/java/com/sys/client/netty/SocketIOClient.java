@@ -1,18 +1,15 @@
 package com.sys.client.netty;
 
-import com.sys.client.netty.listeners.BroadcastListener;
-import com.sys.client.netty.listeners.ConnectedListener;
-import com.sys.client.netty.listeners.MessageListener;
-import com.sys.client.netty.listeners.WebCamListener;
+import com.sys.client.netty.listeners.*;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
 
 /**
  * @ClassName SocketIOClient
@@ -31,6 +28,10 @@ public class SocketIOClient {
     public volatile Socket socket;
     private static String userID = "PIE-001";
 
+    public Socket getSocket() {
+        return socket;
+    }
+
     @PostConstruct
     public void clientConnect() {
         // 服务端socket.io连接通信地址
@@ -44,47 +45,36 @@ public class SocketIOClient {
             options.timeout = 1000;
             // userId: 唯一标识 传给服务端存储
             socket = IO.socket(url + "?userID=" + userID, options);
-            socket.on(Socket.EVENT_CONNECT, args1 -> socket.send("hello..."));
+            socket.on(Socket.EVENT_CONNECT, args1 -> socket.emit("login",userID));
             // 自定义事件`connected` -> 接收服务端成功连接消息
             socket.on("connected", new ConnectedListener());
             // 自定义事件`push_data_event` -> 接收服务端消息
             socket.on("message", new MessageListener());
             // 自定义事件`myBroadcast` -> 接收服务端广播消息
             socket.on("broadcast", new BroadcastListener());
-            socket.on("webcam", new WebCamListener());
+            socket.on("pie-ctl", new PieListener());
             socket.connect();
             Thread.sleep(1000);
-            if(!socket.connected()){
-                socket =null ;
+            if (!socket.connected()) {
+                socket = null;
                 log.info("客户端未连接成功");
-            }else{
+            } else {
                 log.info("客户端连接成功");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     //客户端重连
-    @PostConstruct
-    public void reConnect(){
-        new Thread(() -> {
-            try {
-                while(true){
-                    if(socket==null || !socket.connected()){
-                        log.info("正在重新连接");
-                        clientConnect();
-                    }else{
-                        log.info("已连接");
-                        Thread.sleep(10000);
-                    }
-                    Thread.sleep(3000);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }).start();
-
+    @Scheduled(cron = "0/20 * * * * *")
+    public void reConnect() {
+        if (socket == null || !socket.connected()) {
+            log.info("正在重新连接");
+            clientConnect();
+        } else {
+            log.info("已连接");
+        }
     }
 
 
