@@ -2,8 +2,10 @@ package com.sys.client.timer;
 
 import com.sys.client.M;
 import com.sys.client.common.BaiduFaceUtil;
+import com.sys.client.common.BaiduSpeehUtil;
 import com.sys.client.music.PlayMusic;
 import com.sys.client.netty.SocketIOClient;
+import com.sys.client.utils.StringUtils;
 import com.sys.client.webcam.MyWebcam;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,7 +39,31 @@ public class TakePhotoTime {
                             String user_id = sc.getString("user_id") ;
                             if(score<60){
                                 if(M.IS_WARNING) {
-                                    PlayMusic.playMusic("D:\\java\\python\\mypython\\test\\gaojin.mp3", 1);
+                                    String wj = StringUtils.GAO_JIN ;
+                                    int hashcode = Math.abs(wj.hashCode());
+                                    String path = "/pie/mp3/"+hashcode+".mp3" ;
+                                    BaiduSpeehUtil.speech(wj);
+                                    PlayMusic.playMusic(path,1);
+                                    if(s !=null){
+                                        socketIOClient.getSocket().emit("webcam",s,"gaojin"); //发送给服务端
+                                    }
+                                }
+                            }else{
+                                switch (user_id){
+                                    case "sunys":
+                                        String str = "欢迎孙大帅 ！" ;
+                                        int hashcode = Math.abs(str.hashCode());
+                                        String path = "/pie/mp3/"+hashcode+".mp3" ;
+                                        BaiduSpeehUtil.speech(str);
+                                        PlayMusic.playMusic(path,1);
+                                        break;
+                                    case "qianl":
+                                        String str2 = "欢迎钱乐 ！" ;
+                                        int hashcode2 = Math.abs(str2.hashCode());
+                                        String path2 = "/pie/mp3/"+hashcode2+".mp3" ;
+                                        BaiduSpeehUtil.speech(str2);
+                                        PlayMusic.playMusic(path2,1);
+                                        break;
                                 }
                             }
                         }
@@ -48,7 +74,7 @@ public class TakePhotoTime {
 
                 }
                 if(s !=null){
-                    socketIOClient.getSocket().emit("webcam",s); //发送给服务端
+                    socketIOClient.getSocket().emit("webcam",s,"live"); //发送给服务端
                 }
             }
         }catch (Exception e){

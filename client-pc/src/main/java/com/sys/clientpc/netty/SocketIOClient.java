@@ -29,7 +29,7 @@ public class SocketIOClient {
     static SocketIOClient socketIOClient;
 
     private  static Socket socket;
-    private static String userID = "PC-HUAWEI-001";
+    private static String userID = "PC-AOC-001";
 
     public static synchronized SocketIOClient getInstance(){
         if(socketIOClient==null){

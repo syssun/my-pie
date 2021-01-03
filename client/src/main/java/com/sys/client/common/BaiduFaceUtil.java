@@ -7,9 +7,9 @@ import java.util.HashMap;
 
 public class BaiduFaceUtil {
 
-    private static final String APP_ID = "23124400";
-    private static final String API_KEY = "nSF1xW1XYScn7PI83V3OBl9N";
-    private static final String SECRET_KEY = "hMlxRcVqRkQsZB2p3m53LR7tzHK6SnFp";
+    private static final String APP_ID = "23127378";
+    private static final String API_KEY = "Gnf2KDrYVS1HrrfbjPa0olC4";
+    private static final String SECRET_KEY = "sFafS9R8uuc0A9ldrsjxLZ6Yp8ZxANaO";
     private static AipFace client = new AipFace(APP_ID,API_KEY,SECRET_KEY);
 
     public static JSONObject face(String base64){
@@ -32,7 +32,7 @@ public class BaiduFaceUtil {
         //JSONObject res = client.detect(image, imageType, options);
        // System.out.println(res.toString());
         // 人脸搜索
-        JSONObject res = client.search(image, imageType,"yemast", options);
+        JSONObject res = client.search(image, imageType,"faces", options);
         System.out.println(res.toString());
         return res ;
     }

@@ -31,7 +31,7 @@ public class PlayMusic {
                         player = new Player(stream);
                         for(int i=0;i<times;i++) {
                             player.play();
-                            Thread.sleep(5000);
+                            Thread.sleep(3000);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -46,7 +46,7 @@ public class PlayMusic {
                                 fis.close();
                             }
                         } catch (Exception s) {
-
+                                e.printStackTrace();
                         }
                     }
 
